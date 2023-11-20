@@ -44,6 +44,7 @@ class Cart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.String, nullable=False)
     usertoken = db.Column(db.String, nullable=False)
+    product_id = db.Column(db.Integer, nullable=False)
     product_category = db.Column(db.String, nullable=False)
     product_name = db.Column(db.String, nullable=False)
     price = db.Column(db.Integer, nullable=False)

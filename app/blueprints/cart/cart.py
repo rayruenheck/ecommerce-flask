@@ -7,6 +7,7 @@ def add_cart_item():
     content = request.json
     image=content['image']
     product_category=content['product_category']
+    product_id=content['product_id']
     usertoken= content['usertoken']
     product_name = content['product_name']
     price= int(content['price'])
@@ -14,10 +15,10 @@ def add_cart_item():
     existing_item = Cart.query.filter_by(usertoken=usertoken, product_name=product_name).first()
     if existing_item:
         return jsonify({'message': 'item already in cart'}), 201
-    cart_item = Cart(usertoken=usertoken, product_name=product_name, price=price, quantity=quantity, image=image, product_category=product_category)
+    cart_item = Cart(usertoken=usertoken, product_name=product_name, product_id=product_id, price=price, quantity=quantity, image=image, product_category=product_category)
     cart_item.commit()
     print(cart_item)
-    response = {'usertoken': usertoken, 'product_name' : product_name, 'price' : price, 'quantity' : quantity, 'product_category' : product_category}
+    response = {'usertoken': usertoken, 'product_name' : product_name, 'product_id': product_id, 'price' : price, 'quantity' : quantity, 'product_category' : product_category}
     return response
 
 @cart_bp.put('/add-item-quantity')
@@ -25,6 +26,7 @@ def add_item_quantity():
     content = request.json
     usertoken=content['usertoken']
     product_name=content['product_name']
+    product_id=content['product_id']
     product_category=content['product_category']
     price= int(content['price'])
     quantity = int(content['quantity'])
@@ -32,11 +34,11 @@ def add_item_quantity():
     existing_item = Cart.query.filter_by(usertoken=usertoken, product_name=product_name).first()
     if existing_item:
         existing_item.quantity += 1
-        existing_item.price += price
+        
         existing_item.commit()
         print(existing_item)
 
-        response = {'usertoken': usertoken, 'product_name' : product_name, 'price' : price, 'quantity' : quantity, 'image' : image, 'product_category' : product_category}
+        response = {'usertoken': usertoken, 'product_name' : product_name, 'price' : price, 'quantity' : quantity, 'image' : image, 'product_category' : product_category, 'product_id' : product_id}
         return response
 
 @cart_bp.put('/remove-item-quantity')
@@ -51,12 +53,15 @@ def remove_item_quantity():
     existing_item = Cart.query.filter_by(usertoken=usertoken, product_name=product_name).first()
     if existing_item:
         existing_item.quantity -= 1
-        existing_item.price -= price
+        
         existing_item.commit()
         print(existing_item)
 
         response = {'usertoken': usertoken, 'product_name' : product_name, 'price' : price, 'quantity' : quantity, 'image' : image, 'product_category' : product_category}
         return response
+
+
+        
     
 @cart_bp.get('/get-cart-items')
 def get_cart_items():
@@ -67,6 +72,7 @@ def get_cart_items():
             'image' : item.image,    
             'usertoken' : item.usertoken,
             'product_name' : item.product_name,
+            'product_id' : item.product_id,
             'product_category' : item.product_category,
             'price' : item.price,
             'quantity' : item.quantity,
